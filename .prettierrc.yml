@@ -1,0 +1,13 @@
+singleQuote: true
+semi: false
+plugins:
+  - prettier-plugin-astro
+  - prettier-plugin-tailwindcss
+tailwindFunctions:
+  - classNames
+  - clsx
+  - twMerge
+overrides:
+  - files: '*.astro'
+    options:
+      parser: astro

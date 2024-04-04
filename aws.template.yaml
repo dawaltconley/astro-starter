@@ -1,0 +1,74 @@
+# See https://github.com/dawaltconley/cfn-static-website
+
+AWSTemplateFormatVersion: 2010-09-09
+Description: Resources for a static website
+
+Metadata:
+  cfn-lint:
+    config:
+      ignore_checks:
+        - W3002 # ignore warnings about dependency on the `package` command
+
+Parameters:
+  SiteDomain:
+    Type: String
+  ContactEmail:
+    Type: String
+  GitHubRepo:
+    Type: String
+  AlarmEmail:
+    Type: String
+
+Resources:
+  Domain:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: ./node_modules/@dawaltconley/cfn-static-website/domain.template.yaml
+      Parameters:
+        Domain: !Ref SiteDomain
+  StaticWebsite:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: ./node_modules/@dawaltconley/cfn-static-website/static-website.template.yaml
+      Parameters:
+        Domain: !Ref SiteDomain
+        Subdomain: www
+        Redirect: SubdomainToApex
+        TrailingSlash: 'false'
+        Route53Dns: 'true'
+        CertificateArn: !GetAtt Domain.Outputs.CertificateArn
+        CloudFrontPriceClass: PriceClass_100
+        CloudFrontSecurityPolicy: TLSv1.2_2021
+        CloudFrontCachePolicy: CachingOptimized
+  GitHubDeployment:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: ./node_modules/@dawaltconley/cfn-static-website/git-pipeline.template.yaml
+      Parameters:
+        SiteBucket: !GetAtt StaticWebsite.Outputs.SiteBucket
+        SourceLocation: !Ref GitHubRepo
+        SourceBranch: main
+        EnvironmentImage: aws/codebuild/standard:7.0
+        UseBuildArtifacts: 'false'
+        CacheType: S3
+        CacheExpiration: 30
+        ParameterStoreArns: !Sub "\
+          arn:aws:ssm:us-east-1:${AWS::AccountId}:parameter/FontAwesomeProToken"
+        AlarmEmail: !Ref AlarmEmail
+  ContactFormApi: # see https://github.com/dawaltconley/contact-api/blob/main/docs/template.md
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: ./node_modules/@dawaltconley/contact-api/dist/build/template.yaml
+      Parameters:
+        Email: !Ref ContactEmail
+        Required: 'name,email,subject,message'
+        Honeypot: 'fax_number'
+        AllowOrigin: !Sub 'https://${StaticWebsite.Outputs.FullDomain}'
+
+Outputs:
+  SiteDomain:
+    Value: !GetAtt StaticWebsite.Outputs.FullDomain
+  SiteDistributionDomain:
+    Value: !GetAtt StaticWebsite.Outputs.DistributionDomainName
+  SiteBucket:
+    Value: !GetAtt StaticWebsite.Outputs.SiteBucket

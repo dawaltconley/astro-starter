@@ -1,0 +1,13 @@
+@use '@fortawesome/fontawesome-svg-core/styles.css';
+@use 'hamburgers/_sass/hamburgers/hamburgers.scss' with (
+  $hamburger-types: 'slider',
+  $hamburger-layer-border-radius: 0px,
+  $hamburger-layer-spacing: 4px,
+  $hamburger-layer-height: 2px,
+  $hamburger-layer-width: 20px,
+  $hamburger-padding-x: 0px,
+  $hamburger-padding-y: 0px
+);
+@use 'tailwind';
+
+// project-specific styles go here

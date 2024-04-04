@@ -1,0 +1,76 @@
+---
+import '@styles/global.scss'
+import { client } from '@tina/__generated__/client'
+import { makeOg } from '@lib/build/images'
+import { toUrl, isNotEmpty } from '@lib/utils'
+
+export interface Props {
+  title: string | null
+  description?: string | null
+  ogImage?: string | null
+  class?: string
+}
+
+let {
+  title,
+  description,
+  class: className,
+  ogImage: ogImageCustom,
+} = Astro.props
+
+const siteTitle = 'Starter Site'
+const canonicalUrl = Astro.site && new URL(Astro.url.pathname, Astro.site)
+const tina = await client.queries.global({ relativePath: 'global.yaml' })
+
+title = title && title !== siteTitle ? `${title} – ${siteTitle}` : siteTitle
+
+let ogImage: string = ogImageCustom || tina.data.global.ogImage
+ogImage = new URL(await makeOg(ogImage), Astro.url.origin).href
+
+const twitterHandle = tina.data.global.socialLinks
+  ?.map((s) => toUrl(s || ''))
+  .filter(isNotEmpty)
+  .find((s) => s.hostname.endsWith('twitter.com'))
+  ?.pathname.split('/')[1]
+  .replace(/^/, '@')
+---
+
+<!doctype html>
+<html lang="en" class="bg-gray-50 2xl:text-lg">
+  <!--
+    site design by Dylan Awalt-Conley,
+    web.dylan.ac
+  -->
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+    {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
+
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={Astro.url} />
+    <meta property="og:title" content={title} />
+    {description && <meta property="og:description" content={description} />}
+    <meta property="og:image" content={ogImage} />
+
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:image" content={ogImage} />
+    {twitterHandle && <meta name="twitter:site" content={twitterHandle} />}
+
+    <link rel="shortcut icon" type="image/svg" href="/media/favicon.svg" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class={className}>
+    <slot />
+  </body>
+</html>

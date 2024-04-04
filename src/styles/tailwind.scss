@@ -1,0 +1,235 @@
+@use 'sass:color';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html,
+  body {
+    max-width: 100%;
+    overflow-x: hidden;
+    overflow-x: clip;
+    accent-color: theme('colors.primary');
+    @media not (prefers-reduced-motion) {
+      scroll-behavior: smooth;
+    }
+  }
+
+  body {
+    color: theme('colors.gray.900');
+  }
+
+  body,
+  .parallax__page {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  %relative,
+  .relative-fallback {
+    position: relative;
+  }
+}
+
+@layer components {
+  .layer-children {
+    position: relative;
+    & > * {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  .card {
+    @apply overflow-hidden rounded-sm bg-white shadow;
+
+    &--hover {
+      @apply duration-200 hover:shadow-md;
+    }
+  }
+
+  .content-em {
+    --tw-content: ' — ';
+    content: var(--tw-content, ' — ');
+  }
+
+  .fa-inline {
+    width: 1em;
+    height: 1em;
+    display: inline-block;
+    vertical-align: -0.125em;
+  }
+
+  .vignette {
+    $color: theme('colors.gray.950');
+    $r: color.red($color);
+    $g: color.green($color);
+    $b: color.blue($color);
+    $spread: 8em;
+    box-shadow: 0 0 var(--vignette-spread, $spread) 0
+      var(--vignette-color, rgba($r, $g, $b, var(--vignette-opacity, 0.5)))
+      inset;
+  }
+
+  .lightbox {
+    display: block;
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9;
+    background-color: theme('colors.gray.950');
+
+    transition-property: opacity;
+    transition-duration: theme('transitionDuration.300');
+    pointer-events: none;
+    opacity: 0;
+
+    &--active {
+      pointer-events: auto;
+      opacity: 80;
+    }
+  }
+
+  .underline-link {
+    @apply relative;
+
+    &::before {
+      @apply absolute inset-1 -bottom-0.5 right-full border-b-2 border-transparent duration-300 content-[''];
+    }
+
+    &:hover::before,
+    &:focus-visible::before,
+    &--active::before {
+      @apply right-1 border-primary;
+    }
+  }
+
+  .underline-fill {
+    --underline-color: theme('colors.primary');
+    --x-overflow: 2px;
+    background: linear-gradient(
+        to bottom,
+        var(--underline-color, currentColor) 0%,
+        var(--underline-color, currentColor) 100%
+      )
+      no-repeat left bottom / 100% 2px;
+    text-decoration: none;
+    transition: #{theme('transitionDuration.200')} ease-out;
+    padding: 0 var(--x-overflow);
+    margin: 0 calc(-1 * var(--x-overflow));
+
+    &:hover,
+    &:focus-visible,
+    &--active {
+      background-size: 100% 38%;
+    }
+  }
+}
+
+@layer utilities {
+  .pseudo-fill {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+
+  .clearfix::after {
+    content: '';
+    display: table;
+    clear: both;
+    border-spacing: 0;
+  }
+
+  .items-last-baseline {
+    align-items: last baseline;
+  }
+
+  .text-overflow-fade-b {
+    overflow: hidden;
+    overflow: clip;
+    mask-image: linear-gradient(to top, transparent 0%, black 1.2em);
+  }
+
+  .text-overflow-fade-r {
+    overflow: hidden;
+    overflow: clip;
+    mask-image: linear-gradient(to left, transparent 0%, black 3em);
+  }
+
+  .special-input {
+    display: none;
+  }
+
+  .kerning-none {
+    font-kerning: none;
+  }
+
+  .overlay {
+    &-before,
+    &-after {
+      @extend %relative;
+    }
+
+    &-before::before,
+    &-after::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+    }
+  }
+
+  .feathered-blur {
+    &-before,
+    &-after {
+      @extend %relative;
+      @apply transform-gpu;
+    }
+
+    &-before::before,
+    &-after::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      backdrop-filter: blur(var(--blur-size, 4px));
+      mask-image: linear-gradient(
+          to top,
+          transparent 0%,
+          #ffffff var(--feather-size, 2rem)
+            calc(100% - var(--feather-size, 2rem)),
+          transparent 100%
+        ),
+        linear-gradient(
+          to left,
+          transparent 0%,
+          #ffffff var(--feather-size, 2rem)
+            calc(100% - var(--feather-size, 2rem)),
+          transparent 100%
+        );
+      mask-repeat: no-repeat;
+      mask-composite: intersect;
+    }
+  }
+
+  .inline-next + * {
+    display: inline;
+  }
+
+  .text-shadow {
+    text-shadow: 0px 0px 1.2em theme('colors.gray.950');
+  }
+
+  .gradient-b {
+    $gray: theme('colors.gray.950');
+    background: linear-gradient(
+      to bottom,
+      color.change($gray, $alpha: 0) 0%,
+      color.change($gray, $alpha: 0.95) 100%
+    );
+  }
+}

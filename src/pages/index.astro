@@ -1,0 +1,16 @@
+---
+import Layout from '@layouts/Page.astro'
+import Content from '@components/tina/Content'
+import Footer from '@components/Footer.astro'
+
+import { client } from '@tina/__generated__/client'
+
+const page = await client.queries.home({ relativePath: 'home.mdx' })
+---
+
+<Layout title={null} {...page.data.home.meta}>
+  <main class="text-lg">
+    <Content data={page} path="data.home.hero" />
+  </main>
+  <Footer />
+</Layout>

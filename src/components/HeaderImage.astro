@@ -1,0 +1,64 @@
+---
+import Header, { type Props as HeaderProps } from './Header.astro'
+import BackgroundImage from './BackgroundImage.astro'
+
+export interface Props extends HeaderProps {
+  image: string
+  class?: string
+  imagePosition?: [number | null, number | null]
+}
+
+const {
+  image,
+  class: className,
+  imagePosition: [posX, posY] = [],
+  ...headerProps
+} = Astro.props
+
+const backgroundImage = await Astro.slots.render('background-image')
+---
+
+<div
+  class:list={[
+    className,
+    'vignette relative flex min-h-[40vh] w-full flex-col bg-gray-900/30',
+  ]}
+>
+  {
+    backgroundImage ? (
+      <Fragment set:html={backgroundImage} />
+    ) : (
+      <div
+        class="bg-img-header absolute inset-0 -z-10"
+        style={{
+          '--background-position-x': posX,
+          '--background-position-y': posY,
+        }}
+      />
+    )
+  }
+  <div class="relative z-50 mb-auto">
+    <Header textColor="white" class="sm:text-shadow" {...headerProps} />
+  </div>
+  {
+    Astro.slots.has('default') && (
+      <div class="container mx-auto mb-8 mt-24">
+        <h1 class="separator text-shadow heading-1 mb-8 text-white">
+          <slot />
+        </h1>
+      </div>
+    )
+  }
+  <BackgroundImage selector=".bg-img-header" src={image} formats={['webp']} />
+</div>
+
+<style lang="scss" is:global>
+  .bg-img-header {
+    background-position: center;
+    background-position-x: calc(1% * var(--background-position-x, 50));
+    background-position-y: calc(1% * var(--background-position-y, 50));
+    background-size: cover;
+    background-repeat: no-repeat;
+    filter: contrast(70%);
+  }
+</style>

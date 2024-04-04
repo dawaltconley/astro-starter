@@ -1,0 +1,68 @@
+---
+import type { HTMLTag } from 'astro/types'
+import { twMerge } from 'tailwind-merge'
+
+interface StickyOptions {
+  root?: string
+  rootMargin?: string
+  threshold?: number | number[]
+}
+
+export interface Props {
+  tag?: HTMLTag
+  class?: string
+  options?: StickyOptions
+}
+
+const {
+  tag: Container = 'div',
+  class: className,
+  options: rawOptions,
+} = Astro.props
+const options = rawOptions && {
+  threshold: 1,
+  rootMargin: '-1px 0px 0px',
+  ...rawOptions,
+}
+---
+
+<Container
+  class={twMerge('group/sticky sticky top-0', className)}
+  data-sticky={options ? JSON.stringify(options) : ''}
+>
+  <slot />
+</Container>
+
+<script>
+  const stickyElements = document.querySelectorAll<HTMLElement>('[data-sticky]')
+
+  function callback(entries: IntersectionObserverEntry[]) {
+    entries.forEach((entry) => {
+      console.log(entry)
+      if (!(entry.target instanceof HTMLElement)) return
+      const top = (entry.rootBounds?.top || 0) + 2
+      if (!entry.isIntersecting && entry.boundingClientRect.top < top) {
+        entry.target.dataset.sticky = 'stuck'
+      } else {
+        entry.target.dataset.sticky = ''
+      }
+    })
+  }
+
+  const observer = new IntersectionObserver(callback, {
+    threshold: 1,
+    rootMargin: '-1px 0px 0px',
+  })
+
+  stickyElements.forEach((e) => {
+    const options =
+      e.dataset.sticky &&
+      (JSON.parse(e.dataset.sticky) as IntersectionObserverInit)
+    if (options) {
+      const customObserver = new IntersectionObserver(callback, options)
+      customObserver.observe(e)
+    } else {
+      observer.observe(e)
+    }
+  })
+</script>

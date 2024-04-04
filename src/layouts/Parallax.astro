@@ -1,0 +1,39 @@
+---
+import Layout, { type Props } from './Base.astro'
+export type { Props }
+
+const { class: className = '', ...props } = Astro.props
+---
+
+<Layout class:list={['parallax', className]} {...props}>
+  <div class="parallax__page">
+    <slot />
+  </div>
+</Layout>
+
+<style is:global lang="scss">
+  @use 'sass-parallax' as parallax with (
+    $perspective: 100px,
+    $css-properties: true
+  );
+
+  .parallax {
+    @include parallax.body;
+
+    &__page {
+      @include parallax.page;
+    }
+
+    &__group {
+      @include parallax.group;
+    }
+
+    &__bg {
+      @include parallax.bg;
+
+      &--md {
+        --parallax-depth: -2;
+      }
+    }
+  }
+</style>

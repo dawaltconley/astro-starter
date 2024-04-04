@@ -1,0 +1,63 @@
+@use 'sass:list';
+@use 'sass:map';
+
+$fonts: (
+  // 'Inter': (
+  //   formats: woff2,
+  //   variants: (
+  //     400 normal '/fonts/inter/Inter-Regular',
+  //     400 italic '/fonts/inter/Inter-Italic',
+  //   ),
+  // ),
+  // 'InterVariable': (
+  //   formats: woff2,
+  //   variants: (
+  //     (100 900) normal '/fonts/inter/InterVariable',
+  //     (100 900) italic '/fonts/inter/InterVariable-Italic',
+  //   ),
+  // ),
+) !default;
+
+$file-formats: (
+  'eot': 'embedded-opentype',
+  'woff2': 'woff2',
+  'woff': 'woff',
+  'ttf': 'truetype',
+  'svg': 'svg',
+);
+
+@function _make-src($file, $formats) {
+  $src: ();
+  @each $ext, $format in $file-formats {
+    @if list.index($formats, $ext) {
+      @if ($ext == 'eot') {
+        $ext: '#{$ext}?#iefix';
+      }
+      $src: list.append($src, url(#{$file}.#{$ext}) format(#{$format}), comma);
+    }
+  }
+  @return $src;
+}
+
+@mixin _src($file, $formats) {
+  src: if(list.index($formats, 'eot'), url(#{$file}.eot), null);
+  src: _make-src($file, $formats);
+}
+
+@mixin font-face($fonts) {
+  @each $family, $font in $fonts {
+    $formats: map.get($font, formats);
+    $variants: map.get($font, variants);
+    @each $weight, $style, $file in $variants {
+      @font-face {
+        font-family: $family;
+        @include _src($file, $formats);
+        font-weight: $weight;
+        font-display: swap;
+        font-style: $style;
+      }
+    }
+  }
+}
+
+@include font-face($fonts);

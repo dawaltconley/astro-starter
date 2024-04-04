@@ -1,0 +1,13 @@
+---
+import client from '@tina/__generated__/client'
+import ContactIcons from './tina/ContactIcons'
+
+const data = await client.queries.global({ relativePath: 'global.yaml' })
+---
+
+<footer class="mt-auto bg-gray-900 py-8 text-white">
+  <div class="container mx-auto flex justify-between">
+    <div>&copy; 2024 Dylan Awalt-Conley</div>
+    <ContactIcons data={data} />
+  </div>
+</footer>

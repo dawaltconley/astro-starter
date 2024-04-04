@@ -1,0 +1,134 @@
+---
+import type { Link } from '@lib/utils'
+
+export interface Props {
+  title: string
+  links?: Link[]
+  class?: string
+  textColor?: string
+  useAsTitle?: boolean
+}
+
+const {
+  title,
+  links = [],
+  class: className,
+  useAsTitle,
+  textColor,
+} = Astro.props
+
+const H = useAsTitle ? 'h1' : 'h4'
+---
+
+<header
+  id="header"
+  class:list={['header w-full', className]}
+  style={textColor
+    ? {
+        '--text-color': textColor,
+      }
+    : {}}
+>
+  <nav class="container mx-auto flex h-14 items-end justify-between py-2">
+    <H class="font-display text-2xl">
+      <a href="/" class="underline-link">{title}</a>
+    </H>
+
+    <button
+      class="hamburger hamburger--slider relative z-30 -mr-2 px-2 py-1 sm:hidden"
+      type="button"
+    >
+      <span class="hamburger-box">
+        <span class="hamburger-inner"></span>
+      </span>
+    </button>
+
+    <ul class="header__links sm:-mr-4 sm:flex sm:items-end">
+      {
+        links.map(({ text, href }) => (
+          <li>
+            <a class="group -mb-4 inline-block p-4" href={href}>
+              <span class="underline-link group-hover:underline-link--active group-focus-visible:underline-link--active before:border-b-4 sm:before:border-b-2">
+                {text}
+              </span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+</header>
+
+<style lang="scss">
+  .header {
+    --text-color: theme('colors.gray.900');
+    color: var(--text-color, inherit);
+  }
+
+  .hamburger-inner {
+    &,
+    &::before,
+    &::after {
+      background-color: var(--text-color) !important;
+      transition-property: background-color, transform, opacity;
+    }
+  }
+
+  .hamburger.is-active {
+    --text-color: theme('colors.gray.900');
+  }
+
+  .hamburger:hover,
+  .hamburger.is-active:hover {
+    --text-color: theme('colors.gray.600');
+  }
+
+  @media screen and (max-width: theme('screens.sm') - 1) {
+    .header__links {
+      @apply fixed right-0 top-0 z-20 h-screen translate-x-full justify-center bg-gray-50 px-4 pt-24 text-xl text-gray-900 duration-300;
+      min-width: 45%;
+
+      &--open {
+        @apply translate-x-0;
+      }
+    }
+  }
+</style>
+
+<script>
+  const header = document.getElementById('header') as HTMLDivElement
+  const hamburger = header.querySelector('.hamburger')
+  const links = header.querySelector('.header__links')
+  const lightbox = document.createElement('div')
+  lightbox.classList.add('lightbox')
+  header.appendChild(lightbox)
+
+  let isOpen = false
+
+  const open = () => {
+    isOpen = true
+    links?.classList.add('header__links--open')
+    hamburger?.classList.add('is-active')
+    lightbox.classList.add('lightbox--active')
+    document.documentElement?.classList.add('h-full', 'overflow-hidden')
+  }
+
+  const close = () => {
+    isOpen = false
+    links?.classList.remove('header__links--open')
+    hamburger?.classList.remove('is-active')
+    lightbox.classList.remove('lightbox--active')
+    document.documentElement?.classList.remove('h-full', 'overflow-hidden')
+  }
+
+  const toggleOpen = () => {
+    if (isOpen) {
+      close()
+    } else {
+      open()
+    }
+  }
+
+  hamburger?.addEventListener('click', toggleOpen)
+  lightbox.addEventListener('click', close)
+</script>
