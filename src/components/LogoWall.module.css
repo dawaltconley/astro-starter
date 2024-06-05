@@ -1,0 +1,20 @@
+.gridlines {
+  --columns: 1;
+  --rows: 1;
+  --colwidth: calc((100% / var(--columns)) - 1px);
+  --color: #dddddd;
+
+  border-right: var(--color) 1px solid;
+  border-bottom: var(--color) 1px solid;
+  margin-right: -1px;
+  margin-bottom: -1px;
+  background-image: linear-gradient(
+      to bottom,
+      var(--color),
+      var(--color) 1px,
+      transparent 1px
+    ),
+    linear-gradient(to right, var(--color), var(--color) 1px, transparent 1px);
+  background-size: calc(100% / var(--columns)) calc(100% / var(--rows));
+  background-repeat: repeat;
+}
