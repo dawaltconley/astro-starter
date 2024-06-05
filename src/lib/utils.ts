@@ -1,10 +1,5 @@
 import npmSlugify from 'slugify'
 
-export interface Link {
-  text: string
-  href: string
-}
-
 export function isNotEmpty<T>(v: T | null | undefined): v is T {
   return v !== null && v !== undefined
 }
