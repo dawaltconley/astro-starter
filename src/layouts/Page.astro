@@ -20,6 +20,7 @@ const { useAsTitle, headerImage, headerImagePosition, ogImage, ...props } =
   {
     headerImage && Astro.slots.has('header-title') ? (
       <HeaderImage
+        title={props.title}
         image={headerImage}
         imagePosition={headerImagePosition}
         useAsTitle={useAsTitle}
@@ -28,7 +29,7 @@ const { useAsTitle, headerImage, headerImagePosition, ogImage, ...props } =
         <slot name="header-title" />
       </HeaderImage>
     ) : (
-      <Header useAsTitle={useAsTitle} />
+      <Header title={props.title} useAsTitle={useAsTitle} />
     )
   }
   <slot />

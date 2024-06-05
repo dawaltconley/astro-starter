@@ -1,22 +1,24 @@
 ---
-import type { Link } from '@lib/utils'
-import { isNotEmpty } from '@lib/utils'
+import type { Link, Dropdown } from '@lib/links'
+import { SITE } from '@data/site.mjs'
 
 export interface Props {
-  links?: Link[]
+  title?: string
+  links?: (Link | Dropdown)[]
   class?: string
   textColor?: string
   useAsTitle?: boolean
 }
 
-const { class: className, useAsTitle, textColor } = Astro.props
+const {
+  title = SITE.title,
+  links = [],
+  class: className,
+  useAsTitle,
+  textColor,
+} = Astro.props
 
 const H = useAsTitle ? 'h1' : 'h4'
-
-import { client } from '@tina/__generated__/client'
-
-const page = await client.queries.global({ relativePath: 'global.yaml' })
-const links = page.data.global.header?.filter(isNotEmpty) || []
 ---
 
 <header
@@ -30,7 +32,7 @@ const links = page.data.global.header?.filter(isNotEmpty) || []
 >
   <nav class="container mx-auto flex h-14 items-end justify-between py-2">
     <H class="font-display text-2xl">
-      <a href="/" class="underline-link">{page.data.global.title}</a>
+      <a href="/" class="underline-link">{title}</a>
     </H>
 
     <button
@@ -46,7 +48,7 @@ const links = page.data.global.header?.filter(isNotEmpty) || []
       {
         links.map((link) => (
           <li class="header__link group/link relative inline-block hover:z-10">
-            {link.__typename === 'GlobalHeaderLink' ? (
+            {'href' in link ? (
               <a class="group -mb-4 inline-block p-4" href={link.href}>
                 <span class="underline-link group-hover:underline-link--active group-focus-visible:underline-link--active before:border-b-4 sm:before:border-b-2">
                   {link.text}
