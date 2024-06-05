@@ -10,8 +10,17 @@ export function withTinaWrapper<
   Props extends object = {},
 >(
   Child: FunctionComponent<
-    Omit<Props, 'data'> & ReturnType<typeof useTina<Query>>
+    Omit<Props, 'data' | 'isClient'> & ReturnType<typeof useTina<Query>>
   >,
-): FunctionComponent<Props & { data: TinaData<Query> }> {
-  return ({ data, ...props }) => <Child {...props} {...useTina(data)} />
+): FunctionComponent<
+  Props &
+    (
+      | { data: Query; isClient: boolean } // allow passing through data from previous useTina hook
+      | { data: TinaData<Query>; isClient?: undefined }
+    )
+> {
+  return ({ data, isClient, ...props }) => {
+    const tinaData = isClient === undefined ? useTina(data) : { data, isClient }
+    return <Child {...props} {...tinaData} />
+  }
 }

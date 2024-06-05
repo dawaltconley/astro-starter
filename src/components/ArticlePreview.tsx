@@ -4,6 +4,7 @@ import type { ImageCardProps } from './ImageCard'
 import Card from './Card'
 import pick from 'lodash/pick'
 import clsx from 'clsx'
+import { getHeading, type Heading } from '@lib/headings'
 
 const ArticlePreviewStyle = ['card', 'tile', 'inline'] as const
 const ArticlePreviewLayout = ['basic', 'date'] as const
@@ -36,7 +37,7 @@ export interface ArticlePreviewProps
   children?: ReactNode | null
   publisher?: string | null
   author?: string | null
-  hLevel?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
+  hLevel?: Heading | number
   style?: ArticlePreviewStyle
   layout?: ArticlePreviewLayout
 }
@@ -93,7 +94,7 @@ function ArticleLayoutBasic({
   publisher,
   hLevel,
 }: ArticleLayoutProps) {
-  const H = hLevel || 'p'
+  const H = hLevel ? getHeading(hLevel) : 'p'
   return (
     <div className="h-full max-w-prose font-serif @container/article-preview">
       <H className="font-display text-2xl font-bold">{title}</H>
@@ -120,7 +121,7 @@ function ArticleLayoutDate({
   hLevel,
 }: ArticleLayoutProps) {
   const date = dateString ? new Date(dateString) : null
-  const H = hLevel || 'p'
+  const H = hLevel ? getHeading(hLevel) : 'p'
 
   return (
     <div className="flex h-full max-w-prose flex-col font-serif">

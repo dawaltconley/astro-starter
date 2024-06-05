@@ -83,6 +83,19 @@ module.exports = {
         },
       )
 
+      matchUtilities(
+        {
+          'pseudo-padding': (value) => ({
+            content: "''",
+            position: 'absolute',
+            inset: `-${value}`,
+          }),
+        },
+        {
+          values: theme('spacing'),
+        },
+      )
+
       // custom components
       matchComponents(
         {
@@ -110,5 +123,12 @@ module.exports = {
         },
       )
     }),
+  ],
+  darkMode: [
+    'variant',
+    [
+      '@media (prefers-color-scheme: dark) { &:not(.light *) }',
+      '&:is(.dark *)',
+    ],
   ],
 }

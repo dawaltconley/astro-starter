@@ -38,7 +38,6 @@ const options = rawOptions && {
 
   function callback(entries: IntersectionObserverEntry[]) {
     entries.forEach((entry) => {
-      console.log(entry)
       if (!(entry.target instanceof HTMLElement)) return
       const top = (entry.rootBounds?.top || 0) + 2
       if (!entry.isIntersecting && entry.boundingClientRect.top < top) {

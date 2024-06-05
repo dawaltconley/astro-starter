@@ -44,6 +44,29 @@
     }
   }
 
+  .btn {
+    display: inline-block;
+    padding: theme('spacing.4') theme('spacing.6');
+    border-radius: theme('borderRadius.full');
+    font-size: theme('fontSize.base');
+    font-weight: theme('fontWeight.medium');
+    white-space: nowrap;
+    overflow: hidden;
+    overflow: clip;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    max-width: min(100%, 24rem);
+    transition-duration: #{"theme('transitionDuration.DEFAULT')"};
+  }
+
+  .btn--primary {
+    color: theme('colors.white');
+    background-color: #{"theme('colors.primary')"};
+    &:hover {
+      background-color: #{"theme('colors.primary/80%')"};
+    }
+  }
+
   .card {
     @apply overflow-hidden rounded-sm bg-white shadow;
 
@@ -83,6 +106,7 @@
     height: 100%;
     z-index: 9;
     background-color: theme('colors.gray.950');
+    backdrop-filter: blur(4px);
 
     transition-property: opacity;
     transition-duration: theme('transitionDuration.300');
@@ -91,7 +115,7 @@
 
     &--active {
       pointer-events: auto;
-      opacity: 80;
+      opacity: 80%;
     }
   }
 

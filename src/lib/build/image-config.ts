@@ -10,7 +10,7 @@ const config = new ResponsiveImages({
     urlPath: isProduction
       ? '/_responsive-images/'
       : '/dist/_responsive-images/',
-    // fixOrientation: true,
+    fixOrientation: true,
   },
   disable: !isProduction,
 })

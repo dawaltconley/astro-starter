@@ -49,11 +49,10 @@ export const makeOg = async (image: string): Promise<string> => {
     .toBuffer()
   const fileName =
     crypto.createHash('md5').update(buffer).digest('hex') + '.png'
-  const filePath = path.join(
-    imageConfig.defaults.outputDir || './dist',
-    fileName,
-  )
+  const fileDir = imageConfig.defaults.outputDir || './dist'
+  const filePath = path.join(fileDir, fileName)
   const fileUrl = '/' + path.join(...filePath.split(path.sep).slice(1))
+  await fsp.mkdir(fileDir, { recursive: true })
   await fsp.writeFile(filePath, buffer)
   return fileUrl
 }

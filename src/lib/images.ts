@@ -18,6 +18,11 @@ export const getMetadata = (
   return responsive[image] || image
 }
 
+export interface Image {
+  src: string
+  alt: string
+}
+
 export interface TinaImageControls {
   alt?: string | null
   size?: string | null
@@ -50,8 +55,9 @@ export const getTinaImage = (
   }
 }
 
-export const getImagesFromTinaAst = (ast: any[]): ImageData[] =>
-  ast.reduce(function toImageData(data: ImageData[], e): ImageData[] {
+export const getImagesFromTinaAst = (ast: any): ImageData[] => {
+  if (!Array.isArray(ast)) return []
+  return ast.reduce(function toImageData(data: ImageData[], e): ImageData[] {
     if (e && e?.type === 'img' && typeof e?.url === 'string') {
       return [
         ...data,
@@ -66,3 +72,4 @@ export const getImagesFromTinaAst = (ast: any[]): ImageData[] =>
     }
     return data
   }, [])
+}

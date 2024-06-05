@@ -32,7 +32,7 @@ function getIconFromExt(path: string): IconDefinition {
 }
 
 export interface ImageLinkProps extends ComponentPropsWithoutRef<'a'> {
-  link: string
+  href: string
   image: string
   description?: string
   imageControls?: TinaImageControls
@@ -40,7 +40,7 @@ export interface ImageLinkProps extends ComponentPropsWithoutRef<'a'> {
 }
 
 export default function ImageLink({
-  link,
+  href,
   image,
   description,
   imageControls,
@@ -50,7 +50,7 @@ export default function ImageLink({
   download,
   ...props
 }: ImageLinkProps) {
-  const icon = getIconFromExt(link)
+  const icon = getIconFromExt(href)
   const {
     image: metadata,
     alt = '',
@@ -61,7 +61,7 @@ export default function ImageLink({
 
   return (
     <a
-      href={encodeURI(link)}
+      href={encodeURI(href)}
       className={clsx(
         'not-prose group my-8 block text-center text-[0px]',
         className,

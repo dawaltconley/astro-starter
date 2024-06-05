@@ -1,3 +1,5 @@
+import npmSlugify from 'slugify'
+
 export interface Link {
   text: string
   href: string
@@ -7,7 +9,7 @@ export function isNotEmpty<T>(v: T | null | undefined): v is T {
   return v !== null && v !== undefined
 }
 
-export function isTruthy<T>(v: T | '' | 0 | null | undefined): v is T {
+export function isTruthy<T>(v: T | '' | 0 | false | null | undefined): v is T {
   return Boolean(v)
 }
 
@@ -28,8 +30,9 @@ export function hasProps<T extends object, K extends keyof T>(
   return props.every((p) => p in obj)
 }
 
-export const hasRichText = (ast?: object | null): boolean =>
+export const hasRichText = (ast?: unknown): boolean =>
   ast &&
+  typeof ast === 'object' &&
   'children' in ast &&
   Array.isArray(ast.children) &&
   (ast.children.length > 1 ||
@@ -50,8 +53,4 @@ export const toRichText = (str: string) => ({
   ],
 })
 
-export const slugify = (str: string): string =>
-  str
-    .replace(/[^A-z0-9_]+/g, ' ')
-    .trim()
-    .replace(/ /g, '-')
+export const slugify = (str: string): string => npmSlugify(str, { lower: true })
