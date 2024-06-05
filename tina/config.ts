@@ -1,5 +1,7 @@
 import { defineConfig, type Collection } from 'tinacms'
-import { pageMeta } from './config/fields'
+import { pageMeta, headerLinks, redirects } from './config/fields'
+import * as blocks from './config/blocks'
+import { slugify } from '../src/lib/utils'
 
 // Your hosting provider likely exposes this as an environment variable
 const branch = process.env.HEAD || process.env.VERCEL_GIT_COMMIT_REF || 'main'
@@ -20,13 +22,41 @@ const globalData = {
   },
   fields: [
     {
-      type: 'image',
-      name: 'ogImage',
-      label: 'Default social media image',
+      type: 'string',
+      name: 'title',
+      label: 'Site title',
       required: true,
       ui: {
         description:
+          'Used for previews when a link is shared on social media or any app that supports link previews.',
+      },
+    },
+    {
+      type: 'string',
+      name: 'description',
+      label: 'Site description',
+      required: true,
+      ui: {
+        description:
+          'Used for previews when a link is shared on social media or any app that supports link previews.',
+      },
+    },
+    {
+      type: 'image',
+      name: 'ogImage',
+      label: 'Default social media image',
+      ui: {
+        description:
           'Used for previews when a link is shared on social media or any app that supports link previews. For best results should be 1200x630 pixels. This is a fallback for when page-specific images are not provided.',
+      },
+    },
+    {
+      type: 'image',
+      name: 'favicon',
+      label: 'Site icon',
+      ui: {
+        description:
+          'Displayed on browser tabs. Should be either an svg file, or an image file no more than 180x180, square aspect ratio.',
       },
     },
     {
@@ -35,53 +65,41 @@ const globalData = {
       label: 'Social links',
       list: true,
     },
+    headerLinks,
+    redirects,
   ],
 } satisfies Collection
 
-const homePage = {
-  name: 'home',
-  label: 'Home Page',
+const pages = {
+  name: 'pages',
+  label: 'Pages',
   path: 'content/pages',
-  match: {
-    include: 'home',
-  },
   format: 'mdx',
   ui: {
-    allowedActions: {
-      create: false,
-      delete: false,
-    },
     router: async ({ document }) => {
-      if (document._sys.filename === 'home') return '/'
-      return undefined
+      const slug = slugify(document._sys.filename)
+      if (slug === 'index') return '/'
+      return slug !== undefined ? `/${slug}` : undefined
+    },
+    filename: {
+      slugify: (values) => values.title && slugify(values.title),
     },
   },
   fields: [
     pageMeta,
     {
-      type: 'object',
-      name: 'hero',
-      label: 'Hero',
+      type: 'string',
+      name: 'title',
+      label: 'Title',
       required: true,
-      fields: [
-        {
-          type: 'string',
-          name: 'title',
-          label: 'Title',
-          required: true,
-        },
-        {
-          type: 'string',
-          name: 'subtitle',
-          label: 'Subtitle',
-        },
-        {
-          type: 'rich-text',
-          name: 'content',
-          label: 'Content',
-          isBody: true,
-        },
-      ],
+      isTitle: true,
+    },
+    {
+      type: 'object',
+      name: 'blocks',
+      label: 'Page Blocks',
+      list: true,
+      templates: Object.values(blocks),
     },
   ],
 } satisfies Collection
@@ -106,6 +124,6 @@ export default defineConfig({
     },
   },
   schema: {
-    collections: [globalData, homePage],
+    collections: [globalData, pages],
   },
 })

@@ -1,23 +1,22 @@
 ---
 import type { Link } from '@lib/utils'
+import { isNotEmpty } from '@lib/utils'
 
 export interface Props {
-  title: string
   links?: Link[]
   class?: string
   textColor?: string
   useAsTitle?: boolean
 }
 
-const {
-  title,
-  links = [],
-  class: className,
-  useAsTitle,
-  textColor,
-} = Astro.props
+const { class: className, useAsTitle, textColor } = Astro.props
 
 const H = useAsTitle ? 'h1' : 'h4'
+
+import { client } from '@tina/__generated__/client'
+
+const page = await client.queries.global({ relativePath: 'global.yaml' })
+const links = page.data.global.header?.filter(isNotEmpty) || []
 ---
 
 <header
@@ -31,7 +30,7 @@ const H = useAsTitle ? 'h1' : 'h4'
 >
   <nav class="container mx-auto flex h-14 items-end justify-between py-2">
     <H class="font-display text-2xl">
-      <a href="/" class="underline-link">{title}</a>
+      <a href="/" class="underline-link">{page.data.global.title}</a>
     </H>
 
     <button
@@ -45,13 +44,35 @@ const H = useAsTitle ? 'h1' : 'h4'
 
     <ul class="header__links sm:-mr-4 sm:flex sm:items-end">
       {
-        links.map(({ text, href }) => (
-          <li>
-            <a class="group -mb-4 inline-block p-4" href={href}>
-              <span class="underline-link group-hover:underline-link--active group-focus-visible:underline-link--active before:border-b-4 sm:before:border-b-2">
-                {text}
-              </span>
-            </a>
+        links.map((link) => (
+          <li class="header__link group/link relative inline-block hover:z-10">
+            {link.__typename === 'GlobalHeaderLink' ? (
+              <a class="group -mb-4 inline-block p-4" href={link.href}>
+                <span class="underline-link group-hover:underline-link--active group-focus-visible:underline-link--active before:border-b-4 sm:before:border-b-2">
+                  {link.text}
+                </span>
+              </a>
+            ) : (
+              <>
+                <div class="header__dropdown-label group -mb-4 inline-block p-4">
+                  <span class="sm:underline-link sm:group-hover:underline-link--active sm:group-focus-visible:underline-link--active before:border-b-4 sm:before:border-b-2">
+                    {link.name}
+                  </span>
+                </div>
+                <ul class="header__dropdowns absolute left-0 top-full z-10 mt-2 hidden border border-black bg-white px-4 py-2 shadow-sm before:pseudo-padding-2 group-hover/link:block">
+                  {link.links.map((link) => (
+                    <a
+                      class="header__dropdown-link group block p-4"
+                      href={link.href}
+                    >
+                      <span class="underline-link group-hover:underline-link--active group-focus-visible:underline-link--active before:border-b-4 sm:before:border-b-2">
+                        {link.text}
+                      </span>
+                    </a>
+                  ))}
+                </ul>
+              </>
+            )}
           </li>
         ))
       }
@@ -84,6 +105,10 @@ const H = useAsTitle ? 'h1' : 'h4'
   }
 
   @media screen and (max-width: theme('screens.sm') - 1) {
+    .hamburger {
+      display: block;
+    }
+
     .header__links {
       @apply fixed right-0 top-0 z-20 h-screen translate-x-full justify-center bg-gray-50 px-4 pt-24 text-xl text-gray-900 duration-300;
       min-width: 45%;
@@ -92,13 +117,44 @@ const H = useAsTitle ? 'h1' : 'h4'
         @apply translate-x-0;
       }
     }
+
+    .header__link {
+      display: block;
+    }
+
+    .header__dropdowns {
+      position: static;
+      display: block;
+      border: none;
+      box-shadow: none;
+      background-color: transparent;
+      margin-top: 0;
+      margin-left: theme('spacing.2');
+      padding-top: 0;
+      padding-bottom: 0;
+
+      &::before {
+        display: none;
+      }
+    }
+
+    .header__dropdown-label {
+      padding-bottom: theme('spacing.2');
+      margin-bottom: 0;
+    }
+
+    .header__dropdown-link {
+      padding-top: theme('spacing.2');
+      padding-bottom: theme('spacing.2');
+    }
   }
 </style>
 
 <script>
   const header = document.getElementById('header') as HTMLDivElement
   const hamburger = header.querySelector('.hamburger')
-  const links = header.querySelector('.header__links')
+  const links = header.querySelector('.header__links') as HTMLUListElement
+  const linkAnchors = links.querySelectorAll('a[href]')
   const lightbox = document.createElement('div')
   lightbox.classList.add('lightbox')
   header.appendChild(lightbox)
@@ -131,4 +187,5 @@ const H = useAsTitle ? 'h1' : 'h4'
 
   hamburger?.addEventListener('click', toggleOpen)
   lightbox.addEventListener('click', close)
+  linkAnchors.forEach((a) => a.addEventListener('click', close))
 </script>

@@ -1,4 +1,4 @@
-import type { TinaField } from 'tinacms'
+import type { TinaField, Template } from 'tinacms'
 import { cloneDeep } from 'lodash'
 import { isOgDescription, isPercentage } from './validate'
 
@@ -6,6 +6,97 @@ export interface Option {
   value: string
   label: string
 }
+
+/*
+ * Globals
+ */
+
+const linkTemplate = {
+  name: 'link',
+  label: 'Link',
+  ui: {
+    itemProps: (values) => ({
+      label: values.text || values.href || undefined,
+    }),
+  },
+  fields: [
+    {
+      type: 'string',
+      name: 'text',
+      label: 'Page name',
+      required: true,
+    },
+    {
+      type: 'string',
+      name: 'href',
+      label: 'Link',
+      required: true,
+    },
+  ],
+} satisfies Template
+
+export const link = {
+  type: 'object',
+  ...linkTemplate,
+} satisfies TinaField
+
+export const headerLinks = {
+  type: 'object',
+  name: 'header',
+  label: 'Header Links',
+  list: true,
+  templates: [
+    linkTemplate,
+    {
+      name: 'dropdown',
+      label: 'Dropdown',
+      fields: [
+        {
+          type: 'string',
+          name: 'name',
+          label: 'Dropdown label',
+          required: true,
+        },
+        {
+          ...link,
+          name: 'links',
+          label: 'Links',
+          list: true,
+          required: true,
+        },
+      ],
+    },
+  ],
+} satisfies TinaField
+
+export const redirects = {
+  type: 'object',
+  name: 'redirects',
+  label: 'Redirects',
+  list: true,
+  ui: {
+    itemProps: (values) => ({
+      label:
+        values.from && values.to
+          ? `${values.from || ''} → ${values.to || ''}`
+          : 'Undefined redirect',
+    }),
+  },
+  fields: [
+    {
+      type: 'string',
+      name: 'from',
+      label: 'From',
+      required: true,
+    },
+    {
+      type: 'string',
+      name: 'to',
+      label: 'To',
+      required: true,
+    },
+  ],
+} satisfies TinaField
 
 /*
  * Page Meta
