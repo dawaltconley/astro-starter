@@ -1,14 +1,14 @@
 ---
 import '@styles/global.scss'
+import { SITE, SOCIALS } from '@data/site.mjs'
 import mime from 'mime-types'
-import { client } from '@tina/__generated__/client'
 import { makeOg } from '@lib/build/images'
 import { toUrl, isNotEmpty } from '@lib/utils'
 
 export interface Props {
-  title: string | null
-  description?: string | null
-  ogImage?: string | null
+  title?: string
+  description?: string
+  ogImage?: string
   class?: string
 }
 
@@ -20,20 +20,18 @@ let {
 } = Astro.props
 
 const canonicalUrl = Astro.site && new URL(Astro.url.pathname, Astro.site)
-const tina = await client.queries.global({ relativePath: 'global.yaml' })
-const siteTitle = tina.data.global.title
+const siteTitle = SITE.title
 
 title = title && title !== siteTitle ? `${title} – ${siteTitle}` : siteTitle
-description = description || tina.data.global.description
+description = description || SITE.description
 
-let ogImage = ogImageCustom || tina.data.global.ogImage
+let ogImage = ogImageCustom || SITE.ogImage
 ogImage = ogImage && new URL(await makeOg(ogImage), Astro.url.origin).href
 
-const icon = tina.data.global.favicon
+const icon = SITE.favicon
 const iconMime = icon && mime.lookup(icon)
 
-const twitterHandle = tina.data.global.socialLinks
-  ?.map((s) => toUrl(s || ''))
+const twitterHandle = SOCIALS?.map((s) => toUrl(s || ''))
   .filter(isNotEmpty)
   .find((s) => s.hostname.endsWith('twitter.com') || s.hostname === 'x.com')
   ?.pathname.split('/')[1]
