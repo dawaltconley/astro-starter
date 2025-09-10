@@ -1,4 +1,5 @@
 import type { TinaField, Template } from 'tinacms'
+import { Hidden } from '../components/Hidden'
 import { imageControls } from './fields'
 import { headings } from '../../src/lib/headings'
 
@@ -105,6 +106,13 @@ export const accordionBlock = {
         }),
       },
       fields: [
+        {
+          type: 'string',
+          name: 'id',
+          ui: {
+            component: Hidden as any,
+          },
+        },
         {
           type: 'string',
           label: 'Heading',

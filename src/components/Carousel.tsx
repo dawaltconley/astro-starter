@@ -82,7 +82,6 @@ export default function Carousel({
               i === current
               // current === i || (last.current === i && current !== loaded)
             }
-            className="absolute inset-0 h-full w-full"
             enter="transition duration-500 ease-out z-10"
             enterFrom={clsx(
               'opacity-0',
@@ -101,7 +100,7 @@ export default function Carousel({
             <Image
               src={getMetadata(image.src, responsiveImages)}
               alt={image.alt}
-              className={'h-full w-full'}
+              className={'absolute inset-0 h-full w-full'}
               // onLoad={() => setLoaded(i)}
               imgProps={{
                 className: clsx('h-full w-full', {

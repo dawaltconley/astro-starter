@@ -89,9 +89,9 @@
 
   .vignette {
     $color: theme('colors.gray.950');
-    $r: color.red($color);
-    $g: color.green($color);
-    $b: color.blue($color);
+    $r: color.channel($color, 'red', $space: rgb);
+    $g: color.channel($color, 'green', $space: rgb);
+    $b: color.channel($color, 'blue', $space: rgb);
     $spread: 8em;
     box-shadow: 0 0 var(--vignette-spread, $spread) 0
       var(--vignette-color, rgba($r, $g, $b, var(--vignette-opacity, 0.5)))
@@ -221,7 +221,8 @@
       position: absolute;
       inset: 0;
       backdrop-filter: blur(var(--blur-size, 4px));
-      mask-image: linear-gradient(
+      mask-image:
+        linear-gradient(
           to top,
           transparent 0%,
           #ffffff var(--feather-size, 2rem)

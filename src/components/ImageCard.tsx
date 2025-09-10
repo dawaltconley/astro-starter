@@ -118,7 +118,7 @@ export default function ImageCard({
                 'm-auto max-w-prose bg-white drop-shadow-xl @2xl:drop-shadow-none':
                   style === 'tile',
                 '@2xl:pb-[1em]': style === 'tile' && hasDescLink, // add padding for Read More button
-                'border-4 ': style === 'tile' && borderColor,
+                'border-4': style === 'tile' && borderColor,
                 '@2xl:border-0': borderColor,
               },
               borderColor &&

@@ -18,8 +18,10 @@ export default function AccordionBlock({
       ?.map(
         (s) =>
           s &&
-          Boolean(s.heading) &&
-          Boolean(s.body) && {
+          !!s.id &&
+          !!s.heading &&
+          !!s.body && {
+            id: s.id,
             heading: s.heading,
             body: <TinaMdx content={s.body} images={images} />,
           },

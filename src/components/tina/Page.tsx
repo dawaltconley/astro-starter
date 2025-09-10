@@ -16,17 +16,15 @@ export default withTinaWrapper<PagesQuery, PageProps>(function Page({
 }) {
   return (
     <>
-      {data.pages.blocks
-        ?.slice(offset)
-        .map((block, i) => (
-          <PageBlock
-            key={`${i} ${block?.__typename}`}
-            data={data}
-            isClient={isClient}
-            blockIndex={i}
-            images={images}
-          />
-        ))}
+      {data.pages.blocks?.slice(offset).map((block, i) => (
+        <PageBlock
+          key={`${i} ${block?.__typename}`}
+          data={data}
+          isClient={isClient}
+          blockIndex={i}
+          images={images}
+        />
+      ))}
     </>
   )
 })
