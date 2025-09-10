@@ -1,8 +1,8 @@
 {
   "diagnostic.displayByAle": true,
-  "suggest.noselect": true,
   "tsserver.enable": true,
   "tsserver.useLocalTsdk": true,
+  "coc.preferences.formatOnSave": false,
   "javascript.suggestionActions.enabled": false,
   "css.validate": false,
   "scss.validate": false,
