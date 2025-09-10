@@ -56,11 +56,17 @@ export default function EmailSignUp({
           className="mx-auto mt-4 flex max-w-xl text-lg"
           onSubmit={async (e) => {
             let error: string | null = null
-            lockHeight()
-            await handleSubmit(e).catch((e) => {
-              error = e instanceof Error ? e.message : e.toString()
-            })
-            window.plausible('Email Signup', { props: { error } })
+            try {
+              lockHeight()
+              handleSubmit(e)
+            } catch (e) {
+              if (e instanceof Error) {
+                error = e.message
+              } else {
+                error = e?.toString() || null
+              }
+            }
+            window?.plausible('Contact Form', { props: { error } })
           }}
         >
           <label htmlFor="sign-up-email" className="sr-only">

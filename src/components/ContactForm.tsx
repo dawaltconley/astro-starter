@@ -33,6 +33,7 @@ export default function ContactForm({
     handleSubmit,
   } = useForm({
     requiredFields: ['name', 'email', 'subject', 'message'],
+    transformData: prefixSubject,
   })
   const editStatus = useFormContentChange(content)
   const status = editStatus || formStatus
@@ -78,11 +79,17 @@ export default function ContactForm({
           className="contact-form mx-auto mt-8 w-full max-w-xl grid-cols-2 text-lg @container/contact-form"
           onSubmit={async (e) => {
             let error: string | null = null
-            lockHeight()
-            await handleSubmit(e).catch((e) => {
-              error = e instanceof Error ? e.message : e.toString()
-            })
-            window.plausible('Contact Form', { props: { error } })
+            try {
+              lockHeight()
+              handleSubmit(e)
+            } catch (e) {
+              if (e instanceof Error) {
+                error = e.message
+              } else {
+                error = e?.toString() || null
+              }
+            }
+            window?.plausible('Contact Form', { props: { error } })
           }}
         >
           <label htmlFor="contact-name" className="form-label @md:col-span-1">
@@ -158,4 +165,10 @@ export default function ContactForm({
       )}
     </div>
   )
+}
+
+function prefixSubject(data: FormData): FormData {
+  const subject = data.get('subject')
+  if (subject) data.set('subject', `[${window.location.host}] ${subject}`)
+  return data
 }

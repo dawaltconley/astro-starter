@@ -43,21 +43,18 @@ export const submitForm = (
 ): Promise<Response> => {
   const target = new URL(action)
   const opts: RequestInit = { method, redirect: 'follow' }
-  const dataCopy = copyFormData(data)
-  const subject = dataCopy.get('subject')
-  if (subject) dataCopy.set('subject', `[${window.location.host}] ${subject}`)
 
   if (method === 'GET') {
     if (encType === 'multipart/form-data')
       throw new Error(
         'Unupported: GET method with multipart/form-data encoding',
       )
-    target.search = formDataToSearchParams(dataCopy).toString()
+    target.search = formDataToSearchParams(data).toString()
   } else if (method === 'POST') {
     opts.body =
       encType === 'application/x-www-form-urlencoded'
-        ? formDataToSearchParams(dataCopy)
-        : dataCopy
+        ? formDataToSearchParams(data)
+        : data
   } else {
     throw new Error(`Invalid ${method} request method`)
   }
@@ -79,11 +76,23 @@ export type FormStatus = (typeof FormStatus)[number]
 export const isFormStatus = (str: string): str is FormStatus =>
   FormStatus.includes(str as FormStatus)
 
-export interface FormProps {
+export interface UseFormProps {
   requiredFields?: readonly string[]
+  transformData?: (data: FormData) => FormData
 }
 
-export const useForm = ({ requiredFields = [] }: FormProps) => {
+export interface UseFormResult {
+  status: FormStatus
+  data: FormData
+  errorMessage?: string
+  handleSubmit: (event: FormEvent<HTMLFormElement>) => void
+  handleError: (message?: string) => void
+}
+
+export const useForm = ({
+  requiredFields = [],
+  transformData,
+}: UseFormProps): UseFormResult => {
   const formData = useRef(new FormData())
   const [status, setStatus] = useState<FormStatus>('initial')
   const [errorMessage, setErrorMessage] = useState<string>()
@@ -91,10 +100,10 @@ export const useForm = ({ requiredFields = [] }: FormProps) => {
   const isValid = (data: FormData): boolean =>
     requiredFields.every((field) => data.get(field))
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
-    e.preventDefault()
+  const handleSubmit = (event: FormEvent<HTMLFormElement>): void => {
+    event.preventDefault()
 
-    let { action, method, enctype: encType } = e.currentTarget
+    let { action, method, enctype: encType } = event.currentTarget
     method = method.toUpperCase()
 
     if (!isFormMethod(method)) {
@@ -109,7 +118,7 @@ export const useForm = ({ requiredFields = [] }: FormProps) => {
       )
     }
 
-    const data = new FormData(e.currentTarget)
+    const data = new FormData(event.currentTarget)
     if (!isValid(data)) {
       return handleError('Missing required fields in contact form')
     }
@@ -117,24 +126,36 @@ export const useForm = ({ requiredFields = [] }: FormProps) => {
 
     setStatus('submitting')
 
-    try {
-      const response = await submitForm(data, { action, method, encType })
-      if (response.status >= 400) {
-        const body = await response.json()
-        console.error(body)
-        if ('message' in body && typeof body.message === 'string') {
-          return handleError(`${response.status}: ${body.message}`)
+    const submitData = transformData ? transformData(copyFormData(data)) : data
+
+    submitForm(submitData, { action, method, encType })
+      .then(async (response) => {
+        if (response.status >= 400) {
+          const body: unknown = await response.json()
+          console.error(body) // eslint-disable-line no-console -- should log error
+          if (
+            body &&
+            typeof body === 'object' &&
+            'message' in body &&
+            typeof body.message === 'string'
+          ) {
+            handleError(`${response.status}: ${body.message}`)
+            return
+          }
+          handleError(`Status code ${response.status}`)
+          return
         }
-        return handleError(`Status code ${response.status}`)
-      }
-      return setStatus('success')
-    } catch (e) {
-      // NetworkError when attempting to fetch resource (bad CORS)
-      console.error(e)
-      return e instanceof Error
-        ? handleError(`${e.name}: ${e.message}`)
-        : handleError()
-    }
+        setStatus('success')
+      })
+      .catch((error: Error) => {
+        // NetworkError when attempting to fetch resource (bad CORS)
+        console.error(error)
+        handleError(
+          error instanceof Error
+            ? `${error.name}: ${error.message}`
+            : undefined,
+        )
+      })
   }
 
   const handleError = (message?: string): void => {
