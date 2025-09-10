@@ -1,13 +1,13 @@
 import { useEffect, useRef } from 'react'
 import {
-  useForm,
-  useFormContentChange,
   restoreForm,
   getContent,
   type FormContent,
   type FormMethod,
   type FormEncoding,
 } from '@browser/forms'
+import useForm from '@browser/hooks/useForm'
+import useFormContentChange from '@browser/hooks/useFormContentChange'
 import clsx from 'clsx'
 import Spinner from './Spinner'
 import ErrorMessage from './ErrorMessage'

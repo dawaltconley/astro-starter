@@ -1,12 +1,12 @@
 import { useRef } from 'react'
 import {
-  useForm,
-  useFormContentChange,
   getContent,
   type FormContent,
   type FormMethod,
   type FormEncoding,
 } from '@browser/forms'
+import useForm from '@browser/hooks/useForm'
+import useFormContentChange from '@browser/hooks/useFormContentChange'
 import Spinner from './Spinner'
 import ErrorMessage from './ErrorMessage'
 
