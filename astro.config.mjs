@@ -1,7 +1,7 @@
 import { defineConfig } from 'astro/config'
 
 import * as sass from 'sass'
-import mkTwFunctions from 'sass-tailwind-functions/legacy'
+import mkTwFunctions from 'sass-tailwind-functions/modern'
 import react from '@astrojs/react'
 import tina from 'astro-tina'
 import { getLegacySassFunctions } from '@dawaltconley/responsive-images/sass'
