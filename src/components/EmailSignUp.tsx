@@ -66,7 +66,7 @@ export default function EmailSignUp({
                 error = e?.toString() || null
               }
             }
-            window?.plausible('Contact Form', { props: { error } })
+            window.plausible?.('Email Sign-up', { props: { error } })
           }}
         >
           <label htmlFor="sign-up-email" className="sr-only">

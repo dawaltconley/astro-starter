@@ -89,7 +89,7 @@ export default function ContactForm({
                 error = e?.toString() || null
               }
             }
-            window?.plausible('Contact Form', { props: { error } })
+            window.plausible?.('Contact Form', { props: { error } })
           }}
         >
           <label htmlFor="contact-name" className="form-label @md:col-span-1">

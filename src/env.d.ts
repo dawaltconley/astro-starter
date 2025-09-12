@@ -2,7 +2,7 @@
 /// <reference types="astro/client" />
 
 interface Window {
-  plausible(
+  plausible?(
     event: string,
     options?: {
       callback?: () => void
