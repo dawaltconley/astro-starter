@@ -11,13 +11,12 @@ export default function IconLink({
   url,
   tag,
   title,
-  class: className,
+  className,
   inline = false,
   children,
   ...iconAttributes
 }: IconLinkProps) {
   const IconWrapper = tag ?? (url ? 'a' : 'span')
-  if (inline) iconAttributes.className = 'fa-inline'
   return (
     <IconWrapper
       href={url}
@@ -25,7 +24,12 @@ export default function IconLink({
       title={title}
       {...(url ? { target: '_blank' } : {})}
     >
-      <Icon width="1em" height="1em" {...iconAttributes} />
+      <Icon
+        width="1em"
+        height="1em"
+        className={inline ? 'fa-inline' : ''}
+        {...iconAttributes}
+      />
       {children}
     </IconWrapper>
   )

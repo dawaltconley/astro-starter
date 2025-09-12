@@ -7,7 +7,6 @@ export type IconDefinition = FaIconDefinition | IconifyIconDefinition
 
 export interface IconProps extends Omit<ComponentProps<'svg'>, 'icon'> {
   icon: IconDefinition
-  class?: string
   title?: string
 }
 

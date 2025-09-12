@@ -4,7 +4,6 @@ import { faSpinnerThird as faLoading } from '@fortawesome/pro-regular-svg-icons/
 
 export default function Spinner({
   className,
-  class: className2,
   ...props
 }: Omit<IconProps, 'icon'>) {
   return (
@@ -12,7 +11,7 @@ export default function Spinner({
       icon={faLoading}
       width="1em"
       height="1em"
-      class={clsx('fa-spin', className, className2)}
+      className={clsx('fa-spin', className)}
       {...props}
     />
   )
