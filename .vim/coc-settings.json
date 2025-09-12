@@ -9,5 +9,6 @@
   "tailwindCSS.enable": true,
   "tailwindCSS.lint.invalidConfigPath": "ignore",
   "astro.enable": true,
+  "astro.useWorkspaceTsdk": true,
   "astro.autoCreateQuotes": false
 }
