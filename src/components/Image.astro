@@ -13,9 +13,13 @@ export interface Props extends HTMLAttributes<'picture'>, ImageOptions {
 const { src, alt, sizes, widths, formats, imgProps, ...pictureProps } =
   Astro.props
 
+const imgOptions: ImageOptions = {}
+if (widths) imgOptions.widths = widths
+if (formats) imgOptions.formats = formats
+
 const sources = await images
   .responsive(src)
-  .fromSizes(sizes, { widths, formats })
+  .fromSizes(sizes, imgOptions)
   .toSources({ ...imgProps, alt })
 ---
 
