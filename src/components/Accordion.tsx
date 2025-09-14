@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, Fragment } from 'react'
+import { useState, useEffect, useRef, Fragment, type JSX } from 'react'
 import useResizeObserver from '@react-hook/resize-observer'
 import clsx from 'clsx'
 import PlusMinusIcon from './PlusMinusIcon'

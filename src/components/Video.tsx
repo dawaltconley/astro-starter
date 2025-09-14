@@ -1,9 +1,4 @@
-import {
-  useEffect,
-  useRef,
-  type ComponentPropsWithoutRef,
-  type SyntheticEvent,
-} from 'react'
+import { useEffect, useRef, type ComponentPropsWithoutRef } from 'react'
 
 interface Source {
   src: string
@@ -14,7 +9,7 @@ export interface VideoProps extends ComponentPropsWithoutRef<'video'> {
   sources: Source[]
   play?: boolean
   volume?: number
-  onReady: (e?: SyntheticEvent<HTMLVideoElement>) => void
+  onReady: () => void
 }
 
 export default function Video({

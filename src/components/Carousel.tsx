@@ -3,7 +3,7 @@ import {
   type ResponsiveImageData,
   type TinaImageControls,
 } from '@lib/images'
-import { useState, useRef, type ReactNode } from 'react'
+import { useState, useRef, type JSX, type ReactNode } from 'react'
 import { Transition } from '@headlessui/react'
 import clsx from 'clsx'
 import Image from './Image'

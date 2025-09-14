@@ -1,5 +1,5 @@
+import type { JSX, CSSProperties } from 'react'
 import { getMetadata, type ResponsiveImageData } from '@lib/images'
-import type { CSSProperties } from 'react'
 import Image from './Image'
 import clsx from 'clsx'
 import styles from './LogoWall.module.css'
